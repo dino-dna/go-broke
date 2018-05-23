@@ -6,12 +6,11 @@ name = "pypi"
 
 
 [dev-packages]
-
+pylint = "*"
 
 
 [packages]
-
-yahoo-finance = "*"
+"googlefinance.client" = "*"
 
 
 [requires]
