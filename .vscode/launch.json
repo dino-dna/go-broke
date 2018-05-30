@@ -8,7 +8,9 @@
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",
-      "program": "${file}"
+      "program": "${file}",
+      "pythonPath": "${config:python.pythonPath}",
+
     },
     {
       "name": "Python: Attach",
