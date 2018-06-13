@@ -15,8 +15,9 @@ def main():
     #     aq.fetch_df(symbol, datetime.utcnow(), exchange='NYSE')
     #     time.sleep(0.1)
     df = aq.fetch_df('SPY', exchange='NYSEARCA')
-    pass
-    # bol.bollinger()
+
+    #df = df.rename(columns={'Close':'SPY'})
+    bol.bollinger(df)
 
 
 if __name__ == '__main__':
