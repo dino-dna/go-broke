@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 from threading import Thread
 import logging
+from datetime import datetime, timedelta
 
 LOGGER = logging.getLogger(__file__)
 
@@ -16,7 +17,9 @@ def ticker_filename(ticker, start_date, period='1Y'):
 def get_constituents():
   return pd.read_csv(SP500_TICKERS_FILENAME)
 
-def fetch_df(ticker, start_date, exchange='NYSE', refresh=False):
+def fetch_df(ticker, start_date=None, exchange='NYSE', refresh=False):
+  if not start_date:
+      start_date = start_date=datetime.now() - timedelta(days=1)
   filename = ticker_filename(ticker, start_date)
   if not Path.exists(filename.parent):
     makedirs(filename.parent)
@@ -33,7 +36,15 @@ def fetch_df(ticker, start_date, exchange='NYSE', refresh=False):
         return fetch_df(ticker, start_date, exchange='NASDAQ')
       # raise Exception(f'no data found for ticker symbol {ticker} on {exchange}')
       LOGGER.error(f'no data found for ticker symbol {ticker} on {exchange}')
+    # df.rename({ 0: 'Date '})
     df.to_csv(filename)
+    # pd.read_csv(
+    #     filename,
+    #     index_col=0,
+    #     parse_dates=True,
+    #     usecols=['Date', 'Adj Close'],
+    #     na_values=['nan']
+    #   )
     return df
   else:
     return pd.read_csv(filename)

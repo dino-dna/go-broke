@@ -9,8 +9,8 @@
       "type": "python",
       "request": "launch",
       "program": "${file}",
-      "pythonPath": "${config:python.pythonPath}",
-
+      "pythonPath": "${config:python.pythonPath}:${workspaceFolder}",
+      "cwd": "${workspaceFolder}"
     },
     {
       "name": "Python: Attach",
