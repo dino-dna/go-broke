@@ -9,6 +9,7 @@ pylint = "*"
 [packages]
 "googlefinance.client" = "*"
 matplotlib = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.6"
