@@ -1,29 +1,6 @@
-
-
-def bollinger(df):
-  pass
-
-
 import os
 import pandas as pd
-# import matplotlib.pyplot as plt
-
-
-def get_data(symbols, dates):
-    """Read stock data (adjusted close) for given symbols from CSV files."""
-    df = pd.DataFrame(index=dates)
-    if 'SPY' not in symbols:  # add SPY for reference, if absent
-        symbols.insert(0, 'SPY')
-
-    for symbol in symbols:
-        df_temp = pd.read_csv(symbol_to_path(symbol), index_col='Date',
-                parse_dates=True, usecols=['Date', 'Adj Close'], na_values=['nan'])
-        df_temp = df_temp.rename(columns={'Adj Close': symbol})
-        df = df.join(df_temp)
-        if symbol == 'SPY':  # drop dates SPY did not trade
-            df = df.dropna(subset=["SPY"])
-
-    return df
+import matplotlib.pyplot as plt
 
 
 def plot_data(df, title="Stock prices"):
@@ -34,14 +11,14 @@ def plot_data(df, title="Stock prices"):
     plt.show()
 
 
-def get_rolling_mean(values, window):
+def get_rolling_mean(df, window):
     """Return rolling mean of given values, using specified window size."""
-    return pd.rolling_mean(values, window=window)
+    return df['Close'].rolling(window).mean()
 
 
-def get_rolling_std(values, window):
+def get_rolling_std(df, window):
     """Return rolling standard deviation of given values, using specified window size."""
-    return pd.rolling_std(values, window = window)
+    return df['Close'].rolling(window, window).std()
     # TODO: Compute and return rolling standard deviation
 
 
@@ -123,43 +100,41 @@ def bollinger_strategy(df, rolling_mean, upper_band, lower_band, symbol):
     #print "joined df"
     #print df
 
-def test_run():
-    # Read data
-    dates = pd.date_range('2007-12-31', '2009-12-31')
-    symbol = 'IBM'
-    df = get_data([symbol], dates)
+def bollinger(df):
+    # ???
+    symbol = 'SPY'
 
     # Compute Bollinger Bands
     # 1. Compute rolling mean
-    rolling_mean = get_rolling_mean(df[symbol], window=20)
+    rolling_mean = get_rolling_mean(df, window=20)
 
     # 2. Compute rolling standard deviation
-    rolling_std = get_rolling_std(df[symbol], window=20)
+    rolling_std = get_rolling_std(df, window=20)
 
     # 3. Compute upper and lower bands
     upper_band, lower_band = get_bollinger_bands(rolling_mean, rolling_std)
 
-    df = df.drop('SPY', 1)
-    orders = bollinger_strategy (df, rolling_mean, upper_band, lower_band, symbol)
+    # df = df.drop('SPY', 1)
+    # orders = bollinger_strategy(df, rolling_mean, upper_band, lower_band, symbol)
 
     # Plot raw values, rolling mean and Bollinger Bands
+    df = df.drop('Volume', axis=1)
     ax = df.plot(title="Bollinger Strategy", label=symbol)
     rolling_mean.plot(label='Rolling mean', ax=ax, color='yellow')
     upper_band.plot(label='Bollinger Bands', ax=ax, color='cyan')
     lower_band.plot(label='', ax=ax, color='cyan')
 
 
-
-    row_iterator = orders.iterrows()
-    for i, row in row_iterator:
-        if row['Order'] == "LONG ENTRY":
-            plt.axvline(i, color='green')
-        elif row['Order'] == "LONG EXIT":
-            plt.axvline(i, color='black')
-        elif row['Order'] == "SHORT ENTRY":
-            plt.axvline(i, color='red')
-        elif row['Order'] == "SHORT EXIT":
-            plt.axvline(i, color='black')
+    # row_iterator = orders.iterrows()
+    # for i, row in row_iterator:
+    #     if row['Order'] == "LONG ENTRY":
+    #         plt.axvline(i, color='green')
+    #     elif row['Order'] == "LONG EXIT":
+    #         plt.axvline(i, color='black')
+    #     elif row['Order'] == "SHORT ENTRY":
+    #         plt.axvline(i, color='red')
+    #     elif row['Order'] == "SHORT EXIT":
+    #         plt.axvline(i, color='black')
     # Add axis labels and legend
     ax.set_xlabel("Date")
     ax.set_ylabel("Price")
